@@ -17,15 +17,23 @@
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
   </PropertyGroup>
+	
+  <ItemGroup>
+    <None Remove="uninstall.bat" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Content Include="uninstall.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
-	<Content Update="appsettings.Production.json">
-	  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-	</Content>
 	<Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 	
   <ItemGroup>
+    <PackageReference Include="DasMulli.AspNetCore.Hosting.WindowsServices" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
   </ItemGroup>

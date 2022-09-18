@@ -1,0 +1,1 @@
+﻿ThFnsc.RemoteControl.exe -u

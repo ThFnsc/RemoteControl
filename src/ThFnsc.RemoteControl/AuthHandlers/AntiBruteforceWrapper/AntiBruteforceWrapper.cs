@@ -6,22 +6,30 @@ namespace ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
 public class AntiBruteforceWrapper<THandler> : IAuthenticationHandler where THandler : IAuthenticationHandler
 {
     private static SemaphoreSlim? _semaphore;
-    private readonly THandler _handler;
-    private readonly IOptions<AntiBruteforceOptions> _options;
+    private static int _currentMax = -1;
 
-    public AntiBruteforceWrapper(THandler handler, IOptions<AntiBruteforceOptions> options)
+    private readonly THandler _handler;
+    private readonly IOptionsMonitor<AntiBruteforceOptions> _options;
+
+    public AntiBruteforceWrapper(THandler handler, IOptionsMonitor<AntiBruteforceOptions> options)
     {
         _handler = handler;
         _options = options;
-        _semaphore ??= new SemaphoreSlim(options.Value.Concurrent);
     }
 
     public async Task<AuthenticateResult> AuthenticateAsync()
     {
+        var options = _options.CurrentValue;
+        if(_semaphore == null || _currentMax != options.Concurrent)
+        {
+            _semaphore?.Dispose();
+            _semaphore = new(_currentMax = options.Concurrent);
+        }
+
         var result = await _handler.AuthenticateAsync();
-        await _semaphore!.WaitAsync();
+        await _semaphore.WaitAsync();
         if (result is { Succeeded: false, Failure: not null })
-            await Task.Delay(_options.Value.Timeout);
+            await Task.Delay(options.Timeout);
         _semaphore.Release();
         return result;
     }

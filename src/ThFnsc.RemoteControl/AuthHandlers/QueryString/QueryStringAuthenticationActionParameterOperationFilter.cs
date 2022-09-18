@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -7,13 +8,13 @@ namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
 
 internal class QueryStringAuthenticationActionParameterOperationFilter : IOperationFilter
 {
-    private readonly string _parameterName;
+    private readonly IOptions<QueryStringAuthenticationOptions> _options;
 
-    public QueryStringAuthenticationActionParameterOperationFilter(string parameterName)
+    public QueryStringAuthenticationActionParameterOperationFilter(IOptions<QueryStringAuthenticationOptions> options)
     {
-        if(string.IsNullOrWhiteSpace(parameterName)) 
-            throw new ArgumentNullException(nameof(parameterName));
-        _parameterName = parameterName;
+        _options = options;
+        if (string.IsNullOrWhiteSpace(_options.Value.QueryStringParameterName))
+            throw new ArgumentNullException(nameof(QueryStringAuthenticationOptions.QueryStringParameterName));
     }
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
@@ -30,7 +31,7 @@ internal class QueryStringAuthenticationActionParameterOperationFilter : IOperat
             AllowEmptyValue = false,
             Required = true,
             Description = "The authentication token set in the settings",
-            Name = _parameterName,
+            Name = _options.Value.QueryStringParameterName,
             In = ParameterLocation.Query,
             Example = new OpenApiString("abc123"),
             Schema = new()
