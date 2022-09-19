@@ -6,12 +6,11 @@ public static class QueryStringAuthenticationExtensions
 {
     public static AuthenticationBuilder AddQueryString(this AuthenticationBuilder builder, string? authenticationScheme = null, Action<QueryStringAuthenticationOptions>? configure = null)
     {
-        builder.Services.ConfigureSwaggerGen(sOptions =>
-        {
-            if (configure != null)
-                builder.Services.Configure(configure);
-            sOptions.OperationFilter<QueryStringAuthenticationActionParameterOperationFilter>();
-        });
+        if (configure != null)
+            builder.Services.Configure(configure);
+
+        builder.Services.ConfigureSwaggerGen(sOptions => 
+            sOptions.OperationFilter<QueryStringAuthenticationActionParameterOperationFilter>());
 
         return builder
             .AddScheme<QueryStringAuthenticationOptions, QueryStringAuthenticationHandler>(

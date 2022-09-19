@@ -17,9 +17,6 @@ public class QueryStringAuthenticationHandler : AuthenticationHandler<QueryStrin
     {
         if (Context.Request.Query.TryGetValue(Options.QueryStringParameterName, out var values))
         {
-            if (string.IsNullOrWhiteSpace(Options.Token))
-                throw new InvalidOperationException("Access token was not set");
-
             if (values.Any(v => v == Options.Token))
             {
                 var identity = new ClaimsIdentity(ClaimsIssuer);

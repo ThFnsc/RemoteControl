@@ -1,0 +1,12 @@
+//Settings are applied automatically when the file is saved. No need to restart the service (except for the URLS property)
+{
+  "AntiBruteforceOptions": {
+    "Timeout": "00:00:10", //Hang the request for this much time in case of wrong access token
+    "Concurrent": 3 //How many requests can be executed simultaneously before it's queued
+  },
+  "QueryStringAuthenticationOptions": {
+    //"Token": "<set here your access token and uncomment this line>",
+    "QueryStringParameterName": "token" //The name of the parameter that will accept the access token in the request's query string
+  },
+  "URLS": "http://*:5296" //Change here to another port if you wish to do so (requires service restart)
+}

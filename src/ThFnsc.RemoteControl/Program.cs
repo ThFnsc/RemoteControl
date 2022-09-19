@@ -3,62 +3,69 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Microsoft.Extensions.Logging.Console;
 using System.Reflection;
-using ThFnsc.RemoteControl;
 using ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
 using ThFnsc.RemoteControl.AuthHandlers.QueryString;
 
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+namespace ThFnsc.RemoteControl;
+
+internal class Program
 {
-    Args = args,
-    ContentRootPath = WindowsServiceHelpers.IsWindowsService()
-        ? AppContext.BaseDirectory
-        : default
-});
-
-builder.Services.RemoveAll<ConsoleLoggerProvider>();
-builder.Logging
-    .AddSimpleConsole(options =>
+    private static void Main(string[] args)
     {
-        options.TimestampFormat = "\n\n[dd/MM/yy HH:mm:ss 'UTC'] ";
-        options.UseUtcTimestamp = true;
-        options.IncludeScopes = true;
-    });
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            Args = args,
+            ContentRootPath = WindowsServiceHelpers.IsWindowsService()
+                ? AppContext.BaseDirectory
+                : default
+        });
 
-builder.Services.AddControllers();
+        using var settingsStream = typeof(Program).Assembly.GetManifestResourceStream(typeof(Program), "appsettings.json");
+        builder.Configuration
+            .AddJsonStream(settingsStream)
+            .AddJsonFile("preferences.json", optional: false, reloadOnChange: true);
 
-builder.Services.AddEndpointsApiExplorer();
+        builder.Services.RemoveAll<ConsoleLoggerProvider>();
+        builder.Logging
+            .AddSimpleConsole(options =>
+            {
+                options.TimestampFormat = "\n\n[dd/MM/yy HH:mm:ss 'UTC'] ";
+                options.UseUtcTimestamp = true;
+                options.IncludeScopes = true;
+            });
 
-builder.Services.AddSwaggerGen();
+        builder.Services.AddControllers();
 
-builder.Services.Configure<QueryStringAuthenticationOptions>(QueryStringAuthenticationDefaults.AuthenticationScheme, builder.Configuration.GetSection(nameof(QueryStringAuthenticationOptions)));
-builder.Services.Configure<AntiBruteforceOptions>(builder.Configuration.GetSection(nameof(AntiBruteforceOptions)));
+        builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddAuthentication(QueryStringAuthenticationDefaults.AuthenticationScheme)
-    .UseAntiBruteforce(
-        builderAction: withABF => withABF
-            .AddQueryString());
+        builder.Services.AddSwaggerGen();
 
-builder.Services.AddHttpLogging(options => 
-    options.LoggingFields = HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod | HttpLoggingFields.ResponseStatusCode | HttpLoggingFields.RequestQuery);
+        builder.Services.Configure<QueryStringAuthenticationOptions>(QueryStringAuthenticationDefaults.AuthenticationScheme, builder.Configuration.GetSection(nameof(QueryStringAuthenticationOptions)));
+        builder.Services.Configure<AntiBruteforceOptions>(builder.Configuration.GetSection(nameof(AntiBruteforceOptions)));
 
-builder.Host.UseWindowsService(options =>
-    options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name);
+        builder.Services.AddAuthentication(QueryStringAuthenticationDefaults.AuthenticationScheme)
+            .UseAntiBruteforce(
+                builderAction: withABF => withABF
+                    .AddQueryString());
 
-builder.Services.AddSingleton<ServiceInstaller>();
+        builder.Services.AddHttpLogging(options =>
+            options.LoggingFields = HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod | HttpLoggingFields.ResponseStatusCode | HttpLoggingFields.RequestQuery);
 
-var app = builder.Build();
+        builder.Host.UseWindowsService(options =>
+            options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name);
 
-app.Services.GetRequiredService<ServiceInstaller>()
-    .Run();
+        var app = builder.Build();
 
-app.UseHttpLogging();
+        app.UseHttpLogging();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-app.UseAuthentication();
-app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
-app.MapControllers();
+        app.MapControllers();
 
-app.Run();
+        app.Run();
+    }
+}
