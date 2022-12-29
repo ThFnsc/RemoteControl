@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using ThFnsc.RemoteControl.Util;
 
 namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
 
@@ -11,7 +12,7 @@ public class QueryStringAuthenticationOptions : AuthenticationSchemeOptions
     public override void Validate()
     {
         if (string.IsNullOrWhiteSpace(Token))
-            throw new ArgumentNullException(nameof(Token), "Access token was not set");
+            throw new TokenMissingException("Access token was not set. Check the 'preferences.json' file");
         base.Validate();
     }
 }

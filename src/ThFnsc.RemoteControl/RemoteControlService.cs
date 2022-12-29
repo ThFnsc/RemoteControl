@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging.Console;
 using System.Reflection;
 using ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
 using ThFnsc.RemoteControl.AuthHandlers.QueryString;
+using ThFnsc.RemoteControl.Util;
 
 namespace ThFnsc.RemoteControl;
 
@@ -56,6 +57,19 @@ public class RemoteControlService
             options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name!);
 
         var app = builder.Build();
+
+        app.Use(async (req, next) =>
+        {
+            try
+            {
+                await next();
+            }
+            catch (TokenMissingException ex)
+            {
+                req.Response.StatusCode = 400;
+                await req.Response.WriteAsJsonAsync(new { Error = ex.Message });
+            }
+        });
 
         app.UseHttpLogging();
 
