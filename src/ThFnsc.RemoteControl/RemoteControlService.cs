@@ -21,6 +21,7 @@ public class RemoteControlService
         });
 
         using var settingsStream = typeof(RemoteControlService).Assembly.GetManifestResourceStream(typeof(RemoteControlService), "appsettings.json");
+        ArgumentNullException.ThrowIfNull(settingsStream);
         builder.Configuration
             .AddJsonStream(settingsStream)
             .AddJsonFile("preferences.json", optional: false, reloadOnChange: true);
@@ -52,7 +53,7 @@ public class RemoteControlService
             options.LoggingFields = HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod | HttpLoggingFields.ResponseStatusCode | HttpLoggingFields.RequestQuery);
 
         builder.Host.UseWindowsService(options =>
-            options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name);
+            options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name!);
 
         var app = builder.Build();
 
