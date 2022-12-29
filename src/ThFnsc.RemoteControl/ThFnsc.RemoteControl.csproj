@@ -38,5 +38,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\ProcessExtensions\ProcessExtensions.csproj" />
+  </ItemGroup>
 
 </Project>

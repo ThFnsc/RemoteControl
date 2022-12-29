@@ -13,7 +13,7 @@ public class CommandLineInterface
         {
             Arity = ArgumentArity.ZeroOrMore
         };
-        startCommand.SetHandler(RemoteControlService.StartService, catchAllArgument);
+        startCommand.SetHandler(RemoteControlService.StartServiceAsync, catchAllArgument);
         startCommand.AddArgument(catchAllArgument);
 
 

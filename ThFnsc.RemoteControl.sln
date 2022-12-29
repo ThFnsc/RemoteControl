@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessExtensions", "src\ProcessExtensions\ProcessExtensions.csproj", "{770A3D71-31C3-46AE-97AD-A0325D8462FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,12 +27,17 @@ Global
 		{BEA31C35-6ADF-4A3D-95A8-B8AFD5CA1314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEA31C35-6ADF-4A3D-95A8-B8AFD5CA1314}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BEA31C35-6ADF-4A3D-95A8-B8AFD5CA1314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{770A3D71-31C3-46AE-97AD-A0325D8462FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{770A3D71-31C3-46AE-97AD-A0325D8462FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{770A3D71-31C3-46AE-97AD-A0325D8462FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{770A3D71-31C3-46AE-97AD-A0325D8462FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BEA31C35-6ADF-4A3D-95A8-B8AFD5CA1314} = {A589AB92-9687-49F7-8F8B-4E3271F5B239}
+		{770A3D71-31C3-46AE-97AD-A0325D8462FB} = {A589AB92-9687-49F7-8F8B-4E3271F5B239}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A51836C-A172-4767-B303-20BE65E14D6B}

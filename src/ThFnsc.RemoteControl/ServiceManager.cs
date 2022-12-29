@@ -17,9 +17,9 @@ public class ServiceManager
     {
         Execute("sc", true, false, "stop", _serviceName);
         Execute("sc", true, false, "delete", _serviceName);
-        Execute("sc", true, true, "create", _serviceName, $"binPath= {_startCommand}", "start= auto");
-        Execute("sc", true, true, "failure", _serviceName, "reset= 86400", "actions= restart/60000/restart/60000//1000");
-        Execute("sc", true, true, "start", _serviceName);
+        Execute("sc", false, true, "create", _serviceName, $"binPath={_startCommand}", "start=auto");
+        Execute("sc", false, true, "failure", _serviceName, "reset=", "86400", "actions=", "restart/60000/restart/60000//1000");
+        Execute("sc", false, true, "start", _serviceName);
     }
 
     public void UninstallService()

@@ -10,7 +10,7 @@ namespace ThFnsc.RemoteControl;
 
 public class RemoteControlService
 {
-    public static void StartService(string[] args)
+    public static Task StartServiceAsync(string[] args)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -67,6 +67,6 @@ public class RemoteControlService
 
         app.MapControllers();
 
-        app.Run();
+        return app.RunAsync();
     }
 }

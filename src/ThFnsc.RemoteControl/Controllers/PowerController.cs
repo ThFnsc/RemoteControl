@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using murrayju.ProcessExtensions;
 
 namespace ThFnsc.RemoteControl.Controllers;
 
@@ -31,6 +32,16 @@ public class PowerController : ActionControllerBase
         ExecuteProcessAsync("rundll32.exe", "powrprof.dll,SetSuspendState", "0,1,0");
 
     [HttpGet("Lock")]
-    public Task<IActionResult> LockAsync() =>
-        ExecuteProcessAsync("Rundll32.exe", "user32.dll,LockWorkStation");
+    public IActionResult LockAsync()
+    {
+        try
+        {
+            ProcessExtensions.StartProcessAsCurrentUser("Rundll32.exe", "Rundll32.exe user32.dll,LockWorkStation"); //As service
+        }
+        catch
+        {
+            ExecuteProcessAsync("Rundll32.exe", "user32.dll,LockWorkStation"); //User process fallback
+        }
+        return Ok();
+    }
 }
