@@ -5,7 +5,7 @@
     "QueueLimit": 10, // Maximum cumulative permit count of queued acquisition requests. Must be set to a value >= 0
   },
   "QueryStringAuthenticationOptions": {
-    "Token": "changeme", // Access token required in the querystring for authentication.
+    "Token": "changeme", // Access token required in the querystring for authentication. Disables authentication when null or empty
     "QueryStringParameterName": "token" //The name of the parameter that will accept the access token in the request's query string
   },
   "URLS": "http://*:5296" //Change here to another port if you wish to do so (requires service restart)

@@ -14,20 +14,24 @@ public class QueryStringAuthenticationHandler : AuthenticationHandler<QueryStrin
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (Context.Request.Query.TryGetValue(Options.QueryStringParameterName, out var values))
-        {
-            if (values.Any(v => v == Options.Token))
-            {
-                var identity = new ClaimsIdentity(ClaimsIssuer);
-                var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, ClaimsIssuer);
-                var result = AuthenticateResult.Success(ticket);
-                return Task.FromResult(result);
-            }
-            else
-                return Task.FromResult(AuthenticateResult.Fail($"Invalid authentication token"));
-        }
-        else
+        if (string.IsNullOrWhiteSpace(Options.Token))
+            return AuthenticatedResultAsync();
+
+        if (Context.Request.Query.TryGetValue(Options.QueryStringParameterName, out var values) is false)
             return Task.FromResult(AuthenticateResult.NoResult());
+
+        if (values.Any(v => v == Options.Token))
+            return AuthenticatedResultAsync();
+
+        return Task.FromResult(AuthenticateResult.Fail($"Invalid authentication token"));
+    }
+
+    private Task<AuthenticateResult> AuthenticatedResultAsync()
+    {
+        var identity = new ClaimsIdentity(ClaimsIssuer);
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, ClaimsIssuer);
+        var result = AuthenticateResult.Success(ticket);
+        return Task.FromResult(result);
     }
 }

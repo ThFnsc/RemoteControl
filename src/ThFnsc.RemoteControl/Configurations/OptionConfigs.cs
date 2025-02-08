@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
 using ThFnsc.RemoteControl.Auth;
 using ThFnsc.RemoteControl.Util;
 
@@ -10,11 +11,18 @@ public static class OptionConfigs
     {
         builder.Configuration.AddJsonFile("preferences.json", optional: false, reloadOnChange: true);
 
-        builder.Services.AddOptions<QueryStringAuthenticationOptions>(QueryStringAuthenticationDefaults.AuthenticationScheme)
-            .BindConfiguration(nameof(QueryStringAuthenticationOptions))
+        builder.Services.AddOptions<QueryStringAuthenticationOptionsModel>()
             .ValidateOnStart()
+            .BindConfiguration(nameof(QueryStringAuthenticationOptions))
             .Validate(opt => builder.Environment.IsDevelopment() || opt.Token is not "changeme", "Access token is 'changeme', which is not allowed in production environments. Check the 'preferences.json' file")
             .Validate(opt => string.IsNullOrWhiteSpace(opt.QueryStringParameterName) is false, "QueryStringParameterName must have a value");
+
+        builder.Services.AddOptions<QueryStringAuthenticationOptions>(QueryStringAuthenticationDefaults.AuthenticationScheme)
+            .Configure<IOptions<QueryStringAuthenticationOptionsModel>>((destination, source) =>
+            {
+                destination.Token = source.Value.Token;
+                destination.QueryStringParameterName = source.Value.QueryStringParameterName;
+            });
 
         builder.Services.Configure<JsonOptions>(opt =>
         {
