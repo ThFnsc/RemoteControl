@@ -25,7 +25,7 @@ public static class LoggingConfigs
             op.CustomizeProblemDetails = ctx =>
             {
                 if (ctx.ProblemDetails.Status is 404)
-                    ctx.ProblemDetails.Detail = "Route not found. Check /openapi/v1.json";
+                    ctx.ProblemDetails.Detail = "Route not found. Checkout /Swagger";
             };
         });
 

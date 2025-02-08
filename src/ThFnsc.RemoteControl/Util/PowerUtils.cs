@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 namespace ThFnsc.RemoteControl.Util;
 
 public static class PowerUtils
 {
-    public static Task<IResult> ShutdownAsync([FromServices] ILogger<RemoteControlService> logger, [FromQuery] bool hybrid, [FromQuery] int seconds) =>
+    public static Task<IResult> ShutdownAsync([FromServices] ILogger<RemoteControlService> logger, [FromQuery, DefaultValue(true)] bool hybrid, [FromQuery, DefaultValue(30)] int seconds) =>
        ProcessUtils.ExecuteProcessAsync(
            fileName: "shutdown",
            logger,

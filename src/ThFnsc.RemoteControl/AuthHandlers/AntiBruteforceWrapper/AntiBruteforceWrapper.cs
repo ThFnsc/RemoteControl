@@ -3,40 +3,31 @@ using Microsoft.Extensions.Options;
 
 namespace ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
 
-public class AntiBruteforceWrapper<THandler> : IAuthenticationHandler where THandler : IAuthenticationHandler
+public class AntiBruteforceWrapper<THandler>(THandler handler, IOptionsMonitor<AntiBruteforceOptions> options) : IAuthenticationHandler where THandler : IAuthenticationHandler
 {
     private static SemaphoreSlim? _semaphore;
     private static int _currentMax = -1;
 
-    private readonly THandler _handler;
-    private readonly IOptionsMonitor<AntiBruteforceOptions> _options;
-
-    public AntiBruteforceWrapper(THandler handler, IOptionsMonitor<AntiBruteforceOptions> options)
-    {
-        _handler = handler;
-        _options = options;
-    }
-
     public async Task<AuthenticateResult> AuthenticateAsync()
     {
-        var options = _options.CurrentValue;
-        if(_semaphore == null || _currentMax != options.Concurrent)
+        var currentOptions = options.CurrentValue;
+        if(_semaphore == null || _currentMax != currentOptions.Concurrent)
         {
             _semaphore?.Dispose();
-            _semaphore = new(_currentMax = options.Concurrent);
+            _semaphore = new(_currentMax = currentOptions.Concurrent);
         }
 
-        var result = await _handler.AuthenticateAsync();
+        var result = await handler.AuthenticateAsync();
         await _semaphore.WaitAsync();
         if (result is { Succeeded: false, Failure: not null })
-            await Task.Delay(options.Timeout);
+            await Task.Delay(currentOptions.Timeout);
         _semaphore.Release();
         return result;
     }
 
-    public Task ChallengeAsync(AuthenticationProperties? properties) => _handler.ChallengeAsync(properties);
+    public Task ChallengeAsync(AuthenticationProperties? properties) => handler.ChallengeAsync(properties);
 
-    public Task ForbidAsync(AuthenticationProperties? properties) => _handler.ForbidAsync(properties);
+    public Task ForbidAsync(AuthenticationProperties? properties) => handler.ForbidAsync(properties);
 
-    public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context) => _handler.InitializeAsync(scheme, context);
+    public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context) => handler.InitializeAsync(scheme, context);
 }

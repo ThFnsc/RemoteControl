@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Json;
 using ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
 using ThFnsc.RemoteControl.AuthHandlers.QueryString;
+using ThFnsc.RemoteControl.Util;
 
 namespace ThFnsc.RemoteControl.Configurations;
 
@@ -13,12 +14,17 @@ public static class OptionConfigs
         builder.Services.AddOptions<QueryStringAuthenticationOptions>(QueryStringAuthenticationDefaults.AuthenticationScheme)
             .BindConfiguration(nameof(QueryStringAuthenticationOptions))
             .ValidateOnStart()
-            .Validate(opt => builder.Environment.IsDevelopment() || opt.Token is not "changeme", "Access token is 'changeme', which is not allowed in production environments. Check the 'preferences.json' file");
+            .Validate(opt => builder.Environment.IsDevelopment() || opt.Token is not "changeme", "Access token is 'changeme', which is not allowed in production environments. Check the 'preferences.json' file")
+            .Validate(opt => string.IsNullOrWhiteSpace(opt.QueryStringParameterName) is false, "QueryStringParameterName must have a value");
 
         builder.Services.AddOptions<AntiBruteforceOptions>()
             .BindConfiguration(nameof(AntiBruteforceOptions));
 
-        builder.Services.Configure<JsonOptions>(opt => opt.SerializerOptions.WriteIndented = true);
+        builder.Services.Configure<JsonOptions>(opt =>
+        {
+            opt.SerializerOptions.WriteIndented = true;
+            opt.SerializerOptions.TypeInfoResolverChain.Add(BoolConverter.Default); // This is necessary for openapi to work. Don't ask me why.
+        });
 
         return builder;
     }

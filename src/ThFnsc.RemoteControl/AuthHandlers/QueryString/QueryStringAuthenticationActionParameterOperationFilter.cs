@@ -6,39 +6,33 @@ using Microsoft.OpenApi.Models;
 
 namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
 
-internal class QueryStringAuthenticationActionParameterOperationFilter : IOpenApiOperationTransformer
+internal class QueryStringAuthenticationActionParameterOperationFilter(IOptions<QueryStringAuthenticationOptions> options) : IOpenApiOperationTransformer
 {
-    private readonly IOptions<QueryStringAuthenticationOptions> _options;
-
-    public QueryStringAuthenticationActionParameterOperationFilter(IOptions<QueryStringAuthenticationOptions> options)
-    {
-        _options = options;
-        if (string.IsNullOrWhiteSpace(_options.Value.QueryStringParameterName))
-            throw new ArgumentNullException(nameof(QueryStringAuthenticationOptions.QueryStringParameterName));
-    }
-
     public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
         var requiresAuthorization = context.Description.ActionDescriptor.EndpointMetadata
             .OfType<AuthorizeAttribute>()
             .Any();
 
-        if (!requiresAuthorization)
+        if (requiresAuthorization is false)
             return Task.CompletedTask;
 
-        (operation.Parameters ??= []).Add(new OpenApiParameter()
+        var parameter = new OpenApiParameter()
         {
             AllowEmptyValue = false,
             Required = true,
             Description = "The authentication token set in the settings",
-            Name = _options.Value.QueryStringParameterName,
+            Name = options.Value.QueryStringParameterName,
             In = ParameterLocation.Query,
-            Example = new OpenApiString("abc123"),
+            Example = new OpenApiString("changeme"),
             Schema = new()
             {
                 Type = "string"
             }
-        });
+        };
+
+        (operation.Parameters ??= []).Add(parameter);
+
         return Task.CompletedTask;
     }
 }

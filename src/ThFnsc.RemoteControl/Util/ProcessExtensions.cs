@@ -172,12 +172,12 @@ namespace ThFnsc.RemoteControl.Util
             // Get a handle to the user access token for the current active session.
             if (WTSEnumerateSessions(WTS_CURRENT_SERVER_HANDLE, 0, 1, ref pSessionInfo, ref sessionCount) != 0)
             {
-                var arrayElementSize = Marshal.SizeOf(typeof(WTS_SESSION_INFO));
+                var arrayElementSize = Marshal.SizeOf<WTS_SESSION_INFO>();
                 var current = pSessionInfo;
 
                 for (var i = 0; i < sessionCount; i++)
                 {
-                    var si = (WTS_SESSION_INFO)Marshal.PtrToStructure(current, typeof(WTS_SESSION_INFO));
+                    var si = Marshal.PtrToStructure<WTS_SESSION_INFO>(current);
                     current += arrayElementSize;
 
                     if (si.State == WTS_CONNECTSTATE_CLASS.WTSActive)

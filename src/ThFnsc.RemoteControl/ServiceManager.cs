@@ -2,30 +2,21 @@
 
 namespace ThFnsc.RemoteControl;
 
-public class ServiceManager
+public class ServiceManager(string serviceName, string startCommand)
 {
-	private readonly string _serviceName;
-	private readonly string _startCommand;
-
-	public ServiceManager(string serviceName, string startCommand)
-	{
-		_serviceName = serviceName;
-		_startCommand = startCommand;
-	}
-
     public void InstallService()
     {
-        Execute("sc", true, false, "stop", _serviceName);
-        Execute("sc", true, false, "delete", _serviceName);
-        Execute("sc", false, true, "create", _serviceName, $"binPath={_startCommand}", "start=auto");
-        Execute("sc", false, true, "failure", _serviceName, "reset=", "86400", "actions=", "restart/60000/restart/60000//1000");
-        Execute("sc", false, true, "start", _serviceName);
+        Execute("sc", true, false, "stop", serviceName);
+        Execute("sc", true, false, "delete", serviceName);
+        Execute("sc", false, true, "create", serviceName, $"binPath={startCommand}", "start=auto");
+        Execute("sc", false, true, "failure", serviceName, "reset=", "86400", "actions=", "restart/60000/restart/60000//1000");
+        Execute("sc", false, true, "start", serviceName);
     }
 
     public void UninstallService()
     {
-        Execute("sc", true, true, "stop", _serviceName);
-        Execute("sc", false, true, "delete", _serviceName);
+        Execute("sc", true, true, "stop", serviceName);
+        Execute("sc", false, true, "delete", serviceName);
     }
 
     private static void Execute(string command, bool allowedToFail, bool redirectOutput, params string?[] arguments)

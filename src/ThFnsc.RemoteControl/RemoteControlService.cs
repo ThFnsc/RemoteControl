@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting.WindowsServices;
+﻿using Microsoft.Extensions.Hosting.WindowsServices;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using ThFnsc.RemoteControl.Configurations;
 using ThFnsc.RemoteControl.Util;
@@ -41,8 +40,10 @@ public class RemoteControlService
             }
         });
 
+        app.MapGet("/Ping", () => "Pong!");
+
         var group = app.MapGroup("Power").RequireAuthorization();
-        //group.MapGet("/Shutdown", ([FromServices] ILogger<RemoteControlService> logger, bool hybrid, int seconds) => PowerUtils.ShutdownAsync(logger, hybrid, seconds));
+        group.MapGet("/Shutdown", PowerUtils.ShutdownAsync);
         group.MapGet("/Lock", PowerUtils.LockAsync);
         group.MapGet("/Abort", PowerUtils.AbortAsync);
         group.MapGet("/Reboot", PowerUtils.RebootAsync);

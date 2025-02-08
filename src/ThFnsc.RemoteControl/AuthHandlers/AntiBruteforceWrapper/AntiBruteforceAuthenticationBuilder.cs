@@ -3,10 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
 
-public class AntiBruteforceAuthenticationBuilder : AuthenticationBuilder
+public class AntiBruteforceAuthenticationBuilder(AuthenticationBuilder builder) : AuthenticationBuilder(builder.Services)
 {
-    public AntiBruteforceAuthenticationBuilder(AuthenticationBuilder builder) : base(builder.Services) { }
-
     public override AuthenticationBuilder AddScheme<TOptions, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler>(string authenticationScheme, string? displayName, Action<TOptions>? configureOptions)
     {
         Services.Configure<AuthenticationOptions>(o =>
