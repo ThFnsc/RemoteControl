@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ThFnsc.RemoteControl.Util;
 
-public static class ProcessUtils
+public static class SystemProcessUtils
 {
     public static Task<IResult> ExecuteProcessAsync(string fileName, ILogger logger, params string?[] arguments) =>
         ExecuteProcessAsync(fileName, logger, arguments.AsEnumerable());

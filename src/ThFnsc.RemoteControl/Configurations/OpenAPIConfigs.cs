@@ -11,6 +11,7 @@ public static class OpenAPIConfigs
             conf.AddOperationTransformer<QueryStringAuthenticationActionParameterOperationTransformer>();
             conf.AddDocumentTransformer<SetServerToBaseAddressDocumentTransformer>();
         });
+
         return builder;
     }
 }

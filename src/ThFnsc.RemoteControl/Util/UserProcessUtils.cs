@@ -2,7 +2,7 @@
 
 namespace ThFnsc.RemoteControl.Util
 {
-    public static class ProcessExtensions
+    public static class UserProcessUtils
     {
         #region Win32 Constants
 
