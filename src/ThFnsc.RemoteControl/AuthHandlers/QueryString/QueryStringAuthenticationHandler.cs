@@ -10,8 +10,7 @@ public class QueryStringAuthenticationHandler : AuthenticationHandler<QueryStrin
     public QueryStringAuthenticationHandler(
         IOptionsMonitor<QueryStringAuthenticationOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock) { }
+        UrlEncoder encoder) : base(options, logger, encoder) { }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {

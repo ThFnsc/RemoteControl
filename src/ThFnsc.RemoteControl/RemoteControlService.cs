@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting.WindowsServices;
-using Microsoft.Extensions.Logging.Console;
-using System.Reflection;
-using ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
-using ThFnsc.RemoteControl.AuthHandlers.QueryString;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using ThFnsc.RemoteControl.Configurations;
 using ThFnsc.RemoteControl.Util;
 
 namespace ThFnsc.RemoteControl;
@@ -16,70 +13,41 @@ public class RemoteControlService
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
             Args = args,
-            ContentRootPath = WindowsServiceHelpers.IsWindowsService()
-                ? AppContext.BaseDirectory
-                : default
+            ContentRootPath = WindowsServiceHelpers.IsWindowsService() ? AppContext.BaseDirectory : default
         });
 
-        using var settingsStream = typeof(RemoteControlService).Assembly.GetManifestResourceStream(typeof(RemoteControlService), "appsettings.json");
-        ArgumentNullException.ThrowIfNull(settingsStream);
-        builder.Configuration
-            .AddJsonStream(settingsStream)
-            .AddJsonFile("preferences.json", optional: false, reloadOnChange: true);
-
-        builder.Services.RemoveAll<ConsoleLoggerProvider>();
-        builder.Logging
-            .AddSimpleConsole(options =>
-            {
-                options.TimestampFormat = "\n\n[dd/MM/yy HH:mm:ss 'UTC'] ";
-                options.UseUtcTimestamp = true;
-                options.IncludeScopes = true;
-            });
-
-        builder.Services.AddControllers();
-
-        builder.Services.AddEndpointsApiExplorer();
-
-        builder.Services.AddSwaggerGen();
-
-        builder.Services.Configure<QueryStringAuthenticationOptions>(QueryStringAuthenticationDefaults.AuthenticationScheme, builder.Configuration.GetSection(nameof(QueryStringAuthenticationOptions)));
-        builder.Services.Configure<AntiBruteforceOptions>(builder.Configuration.GetSection(nameof(AntiBruteforceOptions)));
-
-        builder.Services.AddAuthentication(QueryStringAuthenticationDefaults.AuthenticationScheme)
-            .UseAntiBruteforce(
-                builderAction: withABF => withABF
-                    .AddQueryString());
-
-        builder.Services.AddHttpLogging(options =>
-            options.LoggingFields = HttpLoggingFields.RequestPath | HttpLoggingFields.RequestMethod | HttpLoggingFields.ResponseStatusCode | HttpLoggingFields.RequestQuery);
-
-        builder.Host.UseWindowsService(options =>
-            options.ServiceName = Assembly.GetExecutingAssembly().GetName().Name!);
+        builder
+            .AddOptions()
+            .AddCustomLogging()
+            .AddOpenAPI()
+            .AddAuth()
+            .AddServices();
 
         var app = builder.Build();
 
-        app.Use(async (req, next) =>
+        app.UseStatusCodePages();
+
+        app.UseAuthentication();
+
+        app.UseAuthorization();
+
+        app.MapOpenApi();
+
+        app.UseSwaggerUI(new SwaggerUIOptions
         {
-            try
+            ConfigObject = new()
             {
-                await next();
-            }
-            catch (TokenMissingException ex)
-            {
-                req.Response.StatusCode = 400;
-                await req.Response.WriteAsJsonAsync(new { Error = ex.Message });
+                Urls = [new() { Url = "/openapi/v1.json", Name = "v1" }]
             }
         });
 
-        app.UseHttpLogging();
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
+        var group = app.MapGroup("Power").RequireAuthorization();
+        //group.MapGet("/Shutdown", ([FromServices] ILogger<RemoteControlService> logger, bool hybrid, int seconds) => PowerUtils.ShutdownAsync(logger, hybrid, seconds));
+        group.MapGet("/Lock", PowerUtils.LockAsync);
+        group.MapGet("/Abort", PowerUtils.AbortAsync);
+        group.MapGet("/Reboot", PowerUtils.RebootAsync);
+        group.MapGet("/Logoff", PowerUtils.LogoffAsync);
+        group.MapGet("/Sleep", PowerUtils.SleepAsync);
 
         return app.RunAsync();
     }

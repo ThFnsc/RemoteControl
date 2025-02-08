@@ -9,9 +9,6 @@ public static class QueryStringAuthenticationExtensions
         if (configure != null)
             builder.Services.Configure(configure);
 
-        builder.Services.ConfigureSwaggerGen(sOptions => 
-            sOptions.OperationFilter<QueryStringAuthenticationActionParameterOperationFilter>());
-
         return builder
             .AddScheme<QueryStringAuthenticationOptions, QueryStringAuthenticationHandler>(
                 authenticationScheme: authenticationScheme ?? QueryStringAuthenticationDefaults.AuthenticationScheme,

@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
 
-internal class QueryStringAuthenticationActionParameterOperationFilter : IOperationFilter
+internal class QueryStringAuthenticationActionParameterOperationFilter : IOpenApiOperationTransformer
 {
     private readonly IOptions<QueryStringAuthenticationOptions> _options;
 
@@ -17,16 +17,16 @@ internal class QueryStringAuthenticationActionParameterOperationFilter : IOperat
             throw new ArgumentNullException(nameof(QueryStringAuthenticationOptions.QueryStringParameterName));
     }
 
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
-        var requiresAuthorization = context.ApiDescription.ActionDescriptor.EndpointMetadata
+        var requiresAuthorization = context.Description.ActionDescriptor.EndpointMetadata
             .OfType<AuthorizeAttribute>()
             .Any();
 
         if (!requiresAuthorization)
-            return;
+            return Task.CompletedTask;
 
-        operation.Parameters.Add(new OpenApiParameter()
+        (operation.Parameters ??= []).Add(new OpenApiParameter()
         {
             AllowEmptyValue = false,
             Required = true,
@@ -39,5 +39,6 @@ internal class QueryStringAuthenticationActionParameterOperationFilter : IOperat
                 Type = "string"
             }
         });
+        return Task.CompletedTask;
     }
 }

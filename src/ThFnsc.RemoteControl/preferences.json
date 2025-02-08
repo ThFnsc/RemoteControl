@@ -5,7 +5,7 @@
     "Concurrent": 3 //How many requests can be executed simultaneously before it's queued
   },
   "QueryStringAuthenticationOptions": {
-    //"Token": "<set here your access token and uncomment this line>",
+    "Token": "changeme",
     "QueryStringParameterName": "token" //The name of the parameter that will accept the access token in the request's query string
   },
   "URLS": "http://*:5296" //Change here to another port if you wish to do so (requires service restart)
