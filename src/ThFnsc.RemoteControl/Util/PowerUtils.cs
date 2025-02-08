@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ThFnsc.RemoteControl.Util;
 
@@ -8,15 +8,15 @@ public static class PowerUtils
     public static Task<IResult> ShutdownAsync(
         [FromServices] ILogger<RemoteControlService> logger,
         [FromQuery] bool hybrid = true,
-        [FromQuery] int seconds = 30,
-        [FromQuery] string message = "Remote shutdown requested") =>
+        [FromQuery, Range(0, int.MaxValue)] int seconds = 30,
+        [FromQuery, Required] string message = "Remote shutdown requested") =>
        SystemProcessUtils.ExecuteProcessAsync(
            fileName: "shutdown",
            logger,
            "/s",
            "/d", "p:0:0",
            "/t", seconds.ToString(),
-           "/c", message,
+           "/c", message ?? "Remote shutdown requested",
            hybrid ? "/hybrid" : null);
 
     public static Task<IResult> LockAsync([FromServices] ILogger<RemoteControlService> logger)

@@ -2,7 +2,7 @@
   "SlidingWindowRateLimiterOptions": {
     "PermitLimit": "3", // Maximum number of requests that can be served in a window. Must be set to a value > 0
     "Window": "00:00:10", // Specifies the minimum period between replenishments. Must be set to a value greater than zero
-    "QueueLimit": 10, // Maximum cumulative permit count of queued acquisition requests. Must be set to a value >= 0
+    "QueueLimit": 10 // Maximum cumulative permit count of queued acquisition requests. Must be set to a value >= 0
   },
   "QueryStringAuthenticationOptions": {
     "Token": "changeme", // Access token required in the querystring for authentication. Disables authentication when null or empty
