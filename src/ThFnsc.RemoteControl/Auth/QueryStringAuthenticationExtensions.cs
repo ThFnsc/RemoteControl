@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
+namespace ThFnsc.RemoteControl.Auth;
 
 public static class QueryStringAuthenticationExtensions
 {

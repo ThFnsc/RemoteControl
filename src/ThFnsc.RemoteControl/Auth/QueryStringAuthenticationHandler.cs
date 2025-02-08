@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 
-namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
+namespace ThFnsc.RemoteControl.Auth;
 
 public class QueryStringAuthenticationHandler : AuthenticationHandler<QueryStringAuthenticationOptions>
 {

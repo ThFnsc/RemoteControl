@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
-namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
+namespace ThFnsc.RemoteControl.Auth;
 
 internal class QueryStringAuthenticationActionParameterOperationFilter(IOptions<QueryStringAuthenticationOptions> options) : IOpenApiOperationTransformer
 {

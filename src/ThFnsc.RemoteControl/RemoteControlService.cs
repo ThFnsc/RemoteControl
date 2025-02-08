@@ -20,14 +20,17 @@ public class RemoteControlService
             .AddCustomLogging()
             .AddOpenAPI()
             .AddAuth()
+            .AddRateLimiting()
             .AddServices();
 
         var app = builder.Build();
 
         app.UseStatusCodePages();
 
-        app.UseAuthentication();
+        app.UseRateLimiter();
 
+        app.UseAuthentication();
+        
         app.UseAuthorization();
 
         app.MapOpenApi();
@@ -42,7 +45,9 @@ public class RemoteControlService
 
         app.MapGet("/Ping", () => "Pong!");
 
-        var group = app.MapGroup("Power").RequireAuthorization();
+        var group = app.MapGroup("Power")
+            .RequireAuthorization()
+            .RequireRateLimiting(RateLimitConfigs.DefaultPolicy);
         group.MapGet("/Shutdown", PowerUtils.ShutdownAsync);
         group.MapGet("/Lock", PowerUtils.LockAsync);
         group.MapGet("/Abort", PowerUtils.AbortAsync);

@@ -1,4 +1,4 @@
-﻿using ThFnsc.RemoteControl.AuthHandlers.QueryString;
+﻿using ThFnsc.RemoteControl.Auth;
 
 namespace ThFnsc.RemoteControl.Configurations;
 

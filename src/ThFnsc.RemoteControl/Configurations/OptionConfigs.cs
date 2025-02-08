@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.Json;
-using ThFnsc.RemoteControl.AuthHandlers.AntiBruteforceWrapper;
-using ThFnsc.RemoteControl.AuthHandlers.QueryString;
+using ThFnsc.RemoteControl.Auth;
 using ThFnsc.RemoteControl.Util;
 
 namespace ThFnsc.RemoteControl.Configurations;
@@ -16,9 +15,6 @@ public static class OptionConfigs
             .ValidateOnStart()
             .Validate(opt => builder.Environment.IsDevelopment() || opt.Token is not "changeme", "Access token is 'changeme', which is not allowed in production environments. Check the 'preferences.json' file")
             .Validate(opt => string.IsNullOrWhiteSpace(opt.QueryStringParameterName) is false, "QueryStringParameterName must have a value");
-
-        builder.Services.AddOptions<AntiBruteforceOptions>()
-            .BindConfiguration(nameof(AntiBruteforceOptions));
 
         builder.Services.Configure<JsonOptions>(opt =>
         {

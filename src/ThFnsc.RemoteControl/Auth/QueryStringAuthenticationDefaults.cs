@@ -1,4 +1,4 @@
-﻿namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
+﻿namespace ThFnsc.RemoteControl.Auth;
 
 public class QueryStringAuthenticationDefaults
 {
