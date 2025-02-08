@@ -5,7 +5,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "launchUrl": "todos",
+      "launchUrl": "Swagger",
       "applicationUrl": "http://localhost:5296",
       "commandLineArgs": "start",
       "environmentVariables": {
