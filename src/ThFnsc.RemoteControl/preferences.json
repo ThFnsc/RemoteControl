@@ -1,11 +1,11 @@
-//Settings are applied automatically when the file is saved. No need to restart the service (except for the URLS property)
 {
-  "AntiBruteforceOptions": {
-    "Timeout": "00:00:10", //Hang the request for this much time in case of wrong access token
-    "Concurrent": 3 //How many requests can be executed simultaneously before it's queued
+  "SlidingWindowRateLimiterOptions": {
+    "PermitLimit": "3", // Maximum number of requests that can be served in a window. Must be set to a value > 0
+    "Window": "00:00:10", // Specifies the minimum period between replenishments. Must be set to a value greater than zero
+    "QueueLimit": 10 // Maximum cumulative permit count of queued acquisition requests. Must be set to a value >= 0
   },
   "QueryStringAuthenticationOptions": {
-    //"Token": "<set here your access token and uncomment this line>",
+    "Token": "changeme", // Access token required in the querystring for authentication. Disables authentication when null or empty
     "QueryStringParameterName": "token" //The name of the parameter that will accept the access token in the request's query string
   },
   "URLS": "http://*:5296" //Change here to another port if you wish to do so (requires service restart)

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace ThFnsc.RemoteControl.AuthHandlers.QueryString;
+namespace ThFnsc.RemoteControl.Auth;
 
 public static class QueryStringAuthenticationExtensions
 {
@@ -8,9 +8,6 @@ public static class QueryStringAuthenticationExtensions
     {
         if (configure != null)
             builder.Services.Configure(configure);
-
-        builder.Services.ConfigureSwaggerGen(sOptions => 
-            sOptions.OperationFilter<QueryStringAuthenticationActionParameterOperationFilter>());
 
         return builder
             .AddScheme<QueryStringAuthenticationOptions, QueryStringAuthenticationHandler>(

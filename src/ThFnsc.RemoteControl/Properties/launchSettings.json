@@ -1,11 +1,11 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "ThFnsc.RemoteControl": {
+    "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "launchUrl": "swagger",
+      "launchUrl": "Swagger",
       "applicationUrl": "http://localhost:5296",
       "commandLineArgs": "start",
       "environmentVariables": {

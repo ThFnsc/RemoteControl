@@ -1,21 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 
-namespace ThFnsc.RemoteControl.Controllers;
+namespace ThFnsc.RemoteControl.Util;
 
-[ApiController]
-[Route("[controller]")]
-[Authorize]
-public abstract class ActionControllerBase : ControllerBase
+public static class SystemProcessUtils
 {
-    protected IServiceProvider Services => HttpContext.RequestServices;
+    public static Task<IResult> ExecuteProcessAsync(string fileName, ILogger logger, params string?[] arguments) =>
+        ExecuteProcessAsync(fileName, logger, arguments.AsEnumerable());
 
-    protected Task<IActionResult> ExecuteProcessAsync(string fileName, params string?[] arguments) =>
-        ExecuteProcessAsync(fileName, arguments.AsEnumerable());
-
-    protected async Task<IActionResult> ExecuteProcessAsync(string fileName, IEnumerable<string?> arguments)
+    public static async Task<IResult> ExecuteProcessAsync(string fileName, ILogger logger, IEnumerable<string?> arguments)
     {
         var processInfo = new ProcessStartInfo
         {
@@ -30,7 +23,6 @@ public abstract class ActionControllerBase : ControllerBase
                 processInfo.ArgumentList.Add(argument);
 
         StringBuilder stdout = new(), stderr = new();
-        var logger = Services.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
         using var loggerScope = logger.BeginScope("Process: {File} {Arguments}", fileName, string.Join(' ', arguments));
 
         logger.LogInformation("Starting");
@@ -60,8 +52,8 @@ public abstract class ActionControllerBase : ControllerBase
         logger.Log(process.ExitCode == 0 ? LogLevel.Information : LogLevel.Error, "Exited with code {ExitCode}", process.ExitCode);
 
         return process.ExitCode == 0
-            ? Ok()
-            : Problem(
+            ? Results.Ok()
+            : Results.Problem(
                 detail: $"Process finished with a non-zero exit code: {process.ExitCode}",
                 statusCode: 500);
     }
